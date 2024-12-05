@@ -1,0 +1,2 @@
+conda create --name Proyecto9-Hackio python=3.11.9
+conda activate Proyecto9-Hackio
