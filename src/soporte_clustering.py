@@ -367,7 +367,7 @@ class Clustering:
         visualizer.fit(self.dataframe)
         visualizer.show()
     
-    def modelo_kmeans(self, dataframe_original, num_clusters):
+    def modelo_kmeans(self, dataframe_original, num_clusters, metricas = False, graficas = False):
         """
         Aplica KMeans al DataFrame y añade las etiquetas de clusters al DataFrame original.
 
@@ -382,6 +382,17 @@ class Clustering:
         km_fit = kmeans.fit(self.dataframe)
         labels = km_fit.labels_
         dataframe_original["clusters_kmeans"] = labels.astype(str)
+
+        if metricas == True:
+            met = self.calcular_metricas(labels)
+            display(met)
+        else:
+            pass
+
+        if graficas == True:
+            self.plot_distribucion_clusters("clusters_kmeans")
+            self.radar_plot("clusters_kmeans")
+
         return dataframe_original, labels
     
     def visualizar_dendrogramas(self, lista_metodos=["average", "complete", "ward", "single"],grafica_size = (20, 15), titulo_size = 10):
