@@ -94,7 +94,109 @@ def separarar_df(dataframe):
     - Las columnas categóricas se identifican con `select_dtypes(include="O")`.
     """
 
-    return dataframe.select_dtypes(include=np.number), dataframe.select_dtypes(include="O")
+    return dataframe.select_dtypes(include=np.number), dataframe.select_dtypes(include=["object", "category"])
+
+def plot_numericas(dataframe,grafica_size = (15,10)):
+    """
+    Genera histogramas para visualizar la distribución de las variables numéricas en un DataFrame.
+
+    Parámetros:
+    -----------
+    dataframe : pd.DataFrame
+        DataFrame que contiene las columnas numéricas a graficar.
+    grafica_size : tuple, opcional
+        Tamaño de la figura para los gráficos generados, en formato (ancho, alto). Por defecto es (15, 10).
+
+    Retorna:
+    --------
+    None
+        No retorna ningún valor, pero muestra una figura con histogramas para cada columna numérica del DataFrame.
+
+    Notas:
+    ------
+    - Las columnas a graficar se toman directamente del DataFrame proporcionado.
+    - Si el número de columnas numéricas es impar, se elimina el último eje vacío para evitar espacios sin uso.
+    - Cada gráfico incluye un título con el nombre de la columna correspondiente.
+
+    Ejemplo:
+    --------
+    plot_numericas(
+        dataframe=df_numerico,
+        grafica_size=(12, 8)
+    )
+    """
+
+    cols_numericas = dataframe.columns
+    filas = math.ceil(len(cols_numericas)/2)
+    fig, axes = plt.subplots(nrows= filas,ncols=2,figsize = grafica_size)
+    axes = axes.flat
+
+    for i, col in enumerate(cols_numericas):
+        sns.histplot(x= col,data=dataframe,ax= axes[i])
+        axes[i].set_title(f"{col}")
+        axes[i].set_xlabel("")
+
+    if len(cols_numericas) % 2 != 0:
+        fig.delaxes(axes[-1])
+    else:
+        pass
+    plt.tight_layout()
+
+def plot_categoricas(dataframe, paleta="mako",grafica_size = (15,10)):
+    """
+    Genera gráficos de barras para visualizar la distribución de las variables categóricas en un DataFrame.
+
+    Parámetros:
+    -----------
+    dataframe : pd.DataFrame
+        DataFrame que contiene las columnas categóricas a graficar.
+    paleta : str, opcional
+        Paleta de colores para los gráficos. Por defecto es "mako".
+    grafica_size : tuple, opcional
+        Tamaño de la figura para los gráficos generados, en formato (ancho, alto). Por defecto es (15, 10).
+
+    Retorna:
+    --------
+    None
+        No retorna ningún valor, pero muestra una figura con gráficos de barras para cada columna categórica del DataFrame.
+
+    Notas:
+    ------
+    - Las columnas a graficar se toman directamente del DataFrame proporcionado.
+    - Las barras se ordenan por frecuencia descendente.
+    - Si el número de columnas categóricas es impar, se elimina el último eje vacío para evitar espacios sin uso.
+    - Cada gráfico incluye un título con el nombre de la columna correspondiente, y las etiquetas del eje X se rotan para mejorar la legibilidad.
+
+    Ejemplo:
+    --------
+    plot_categoricas(
+        dataframe=df_categorico,
+        paleta="viridis",
+        grafica_size=(12, 8)
+    )
+    """
+
+    cols_categoricas = dataframe.columns
+    filas = math.ceil(len(cols_categoricas)/2)
+    fig, axes = plt.subplots(nrows= filas,ncols=2,figsize = grafica_size)
+    axes = axes.flat
+
+    for i, col in enumerate(cols_categoricas):
+        sns.countplot(  x= col,data=dataframe,
+                        ax= axes[i],
+                        hue = col,
+                        palette=paleta,
+                        order=dataframe[col].value_counts().index,
+                        legend=False)
+        axes[i].set_title(f"{col}")
+        axes[i].set_xlabel("")
+        axes[i].tick_params(rotation=90)
+    
+    plt.tight_layout()
+    if len(cols_categoricas) % 2 != 0:
+        fig.delaxes(axes[-1])
+    else:
+        pass
 
 def relacion_vr_categoricas(dataframe,variable_respuesta,paleta="mako",grafica_size = (15,10)):
     """
