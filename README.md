@@ -60,20 +60,74 @@ cd Proyecto9-Clustering
 ```
 
 # Resumen de lo realizado en el Modelo final: 
+### Clustering
+- En el análisis inicial elimino las siguientes columnas
+    - ['Row ID','Order ID','Order Date','Ship Date','Customer ID','Customer Name','City','State','Country','Postal Code','Product Name']
+- No voy a tocar los outliers en esta fase, considero que son datos de ventas realistas que ahora mismo buscamos agrupar en clusters
+- Volvemos categoría las siguientes columnas
+    - ["Ship Mode","Segment","Market","Region","Category","Sub-Category","Order Priority"]
 
-# Resultados del Mejor Modelo (Modelo 4)
-- Mejor modelo XGBooster:
-- Tiene un test kappa alto.
-- Mantiene un buen equilibrio entre train y test. No es overfitting.
-- Es un modelo que es rápido y eficiente y nos permite ajustarle parámetros sin muchos quebraderos de cabeza.
+- Realizamos Frequency Encoding a todas las columnas salvo a "Product ID"
+
+- Utilizando Robust Scaler, aplicamos feature scaling
+
+- Ponemos como índice la columna "Product ID"
+
+- Realizamos un Silhoutte Score Elbow para realizar el Kmeans
+
+- Realizamos Kmeans dividiendo en 2 grupos
+
+- Utilizando el "Product ID" realizamos un left merge al Dataframe original de la columna "clusters_kmeans"
+
+# Modelos de Predicción
+Dividido por Market son los siguientes:
+### Cluster 1
+- US
+- APAC
+- EU
+- LATAM
+### Cluster 2
+- Africa
+- EMEA
+- Canada
+### Fase 1: EDA y Ajuste de Datos
+- Se eliminan las Columnas ['Row ID','Order ID','Order Date','Ship Date','Customer ID','Customer Name','City','State','Country','Postal Code','Product ID','Product Name']
+
+- Se elimina "Sales" Tras ver las correlación
+
+- Se convierten a tipo "category" las columnas de tipo "Object"
+### Fase 2: Encoding
+- Se utiliza Kruskal para medir el orden de las columnas
+
+- Se realiza Target Encoding con las columnas ordinales
+
+- Se realiza OneHot Encoding con las columnas nominales
+### Fase 3: Feature Scaling
+- Se utiliza Robust Scaler para normalizar los valores
+### Fase 4: Gestión Outliers
+- Se analizan pero no se gestionan en este modelo
+### Fase 5: Modelos Predictivos
+- Se realiza Decision Tree 
+
+- Se realiza XGBoost
+
+# Resultados del Mejor Modelo (Modelo 1)
+## Cluster 1
+Mejor Modelo: XGBoost
 ### Métricas
-![Texto alternativo](src/img/métricas%20ganadoras.png)
-### Matriz Confusión
-![Texto alternativo](src/img/matriz_confusion.png)
-### Curva Roc
-![Texto alternativo](src/img/curva_roc.png)
-### Shap Plot
-![Texto alternativo](src/img/shap%20plot.png)
+![Métricas](src/01_img/metricas_cluster1.png)
+### Importancia
+![Importancia](src/01_img/importancia_cluster1.png)
+### Shap Plots
+![Shap Plots](src/01_img/shap_cluster1.png)
+## Cluster 2
+Mejor Modelo: XGBoost
+### Métricas
+![Métricas](src/01_img/metricas_cluster2.png)
+### Importancia
+![Importancia](src/01_img/importancia_cluster2.png)
+### Shap Plots
+![Shap Plots](src/01_img/shap_cluster2.png)
 
 # Conclusiones:
 A partir de los resultados obtenidos podemos responder a las siguientes preguntas:
@@ -93,11 +147,23 @@ Los productos los podemos agrupar por mercados en dos grupos, tenemos 4 mercados
 
 De esta forma mantenemos los datos equilibrados a la hora de realizar el análisis del profit, pero no generamos un modelo con datos demasiados disparejos que podrían dificultar las predicciones.
 ### ¿Qué factores son más relevantes para predecir el beneficio o las ventas dentro de cada grupo?
+Observando ambas Gráficas de Importancia:
+-** Descuento (Discount)**: Es el factor más influyente, indicando que la cantidad de descuento otorgada tiene un impacto significativo en las predicciones.
+- **Costo de Envío (Shipping Cost)**: Influye de manera importante en las predicciones. Los costos de envío parecen estar correlacionados con el beneficio.
+- **Cantidad (Quantity)**: La cantidad de productos vendidos tiene una relevancia considerable en las predicciones.
 
-Esto ayudará a diseñar estrategias específicas de marketing, optimizar precios o ajustar políticas de descuento.
 ### ¿Cómo podemos utilizar estos insights para tomar decisiones estratégicas?
 
-Por ejemplo, enfocarse en los segmentos más rentables o intervenir en los menos rentables.
+Analizando las subcategorías del cluster 1 observamos que:
+![Cositas](src/01_img/cluster1_relacionProfit.png)
+- Las Mesas (Tables) Generan pérdidas, habría que ver la razón, si es que se han dado demasiados descuentos, o que no se calcula correctamente el coste de envío
+
+Además observando el resto de métricas podríamos aplicar los siguiente:
+- Política de Descuentos: Diseñar descuentos personalizados según el producto, el cliente y el mercado para maximizar el beneficio sin reducir márgenes innecesariamente.
+
+- Nuevas Estrategias de Envío: Analizar opciones logísticas para reducir costos, especialmente en mercados sensibles al precio del envío.
+
+- Adaptación al Mercado: Dependiendo del Mercado deberemos aplicar políticas adaptadas
 
 # Contribuciones 🤝
 
