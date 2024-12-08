@@ -19,4 +19,25 @@ La idea es básicamente agrupar con el mejor número de clústers y con cada gru
 
 - Utilizando el "Product ID" realizamos un left merge al Dataframe original de la columna "clusters_kmeans"
 
+# Modelos de Predicción
+### Fase 1: EDA y Ajuste de Datos
+- Se eliminan las Columnas ['Row ID','Order ID','Order Date','Ship Date','Customer ID','Customer Name','City','State','Country','Postal Code','Product ID','Product Name']
+
+- Se elimina Sales Tras ver las correlación
+
+- Se convierten a tipo "category" las columnas de tipo "Object"
+### Fase 2: Encoding
+- Se utiliza Kruskal para medir el orden de las columnas
+
+- Se realiza Target Encoding con las columnas ordinales
+
+- Se realiza OneHot Encoding con las columnas nominales
+### Fase 3: Feature Scaling
+- Se utiliza Robust Scaler para normalizar los valores
+### Fase 4: Gestión Outliers
+- Se analizan pero no se gestionan en este modelo
+### Fase 5: Modelos Predictivos
+- Se realiza Decision Tree 
+
+- Se realiza XGBoost
 
